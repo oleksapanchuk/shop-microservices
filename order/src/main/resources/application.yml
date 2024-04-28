@@ -13,4 +13,6 @@ spring:
     init:
       mode: always
   jpa:
+    hibernate:
+      ddl-auto: create
     show-sql: true
