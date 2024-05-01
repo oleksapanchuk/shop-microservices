@@ -6,10 +6,12 @@ import com.stripe.model.PaymentIntent;
 import dev.oleksa.order.constants.OrderStatus;
 import dev.oleksa.order.dto.OrderDto;
 import dev.oleksa.order.dto.ProductDto;
+import dev.oleksa.order.dto.UserDto;
 import dev.oleksa.order.dto.request.PaymentInfoRequest;
 import dev.oleksa.order.dto.request.PurchaseRequest;
 import dev.oleksa.order.dto.response.OrderDetailsResponse;
 import dev.oleksa.order.dto.response.OrderItemResponse;
+import dev.oleksa.order.dto.response.ProductDetailsResponse;
 import dev.oleksa.order.entity.Address;
 import dev.oleksa.order.entity.Order;
 import dev.oleksa.order.entity.OrderItem;
@@ -18,6 +20,8 @@ import dev.oleksa.order.mapper.AddressMapper;
 import dev.oleksa.order.mapper.OrderMapper;
 import dev.oleksa.order.repository.OrderRepository;
 import dev.oleksa.order.service.OrderService;
+import dev.oleksa.order.service.client.ProductFeignClient;
+import dev.oleksa.order.service.client.UserFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,12 +40,19 @@ import static dev.oleksa.order.mapper.OrderMapper.mapToOrderDto;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final ProductFeignClient productFeignClient;
+    private final UserFeignClient userFeignClient;
 
     @Autowired
     public OrderServiceImpl(
             OrderRepository orderRepository,
-            @Value("${stripe.keys.secret}") String secretKey) {
+            @Value("${stripe.keys.secret}") String secretKey,
+            ProductFeignClient productFeignClient,
+            UserFeignClient userFeignClient
+    ) {
         this.orderRepository = orderRepository;
+        this.productFeignClient = productFeignClient;
+        this.userFeignClient = userFeignClient;
 
         // initialize Stripe API with secret key
         Stripe.apiKey = secretKey;
@@ -76,9 +87,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto fetchOrderById(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new ResourceNotFoundException("Order", "id", orderId)
-        );
+//        Order order = orderRepository.findById(orderId).orElseThrow(
+//                () -> new ResourceNotFoundException("Order", "id", orderId)
+//        );
+        ProductDetailsResponse productDetailsResponse = productFeignClient.fetchProduct(1L).getBody();
+        UserDto userDto = userFeignClient.fetchUser(1L).getBody();
+
+        Order order = Order.builder()
+                .orderTrackingNumber(productDetailsResponse.getName())
+                .userEmail(userDto.getEmail())
+                .build();
         return mapToOrderDto(order);
     }
 

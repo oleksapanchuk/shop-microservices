@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class OrderDto {
     private Long id;
-    private Long userId;
+    private String email;
     private String orderTrackingNumber;
     private Integer totalQuantity;
     private Integer totalPrice;

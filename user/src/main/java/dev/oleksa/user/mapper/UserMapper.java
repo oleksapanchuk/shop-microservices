@@ -15,7 +15,7 @@ public class UserMapper {
                 .phoneNumber(user.getPhoneNumber())
                 .subscribed(user.isSubscribed())
                 .verified(user.isVerified())
-                .role(user.getRole().name())
+//                .role(user.getRole().name())
                 .build();
     }
 

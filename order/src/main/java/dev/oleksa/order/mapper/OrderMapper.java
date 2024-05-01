@@ -8,6 +8,7 @@ public class OrderMapper {
     public static OrderDto mapToOrderDto(Order order) {
         return OrderDto.builder()
                 .id(order.getId())
+                .email(order.getUserEmail())
                 .orderTrackingNumber(order.getOrderTrackingNumber())
                 .totalQuantity(order.getTotalQuantity())
                 .totalPrice(order.getTotalPrice())
@@ -22,6 +23,7 @@ public class OrderMapper {
                 .totalQuantity(orderDto.getTotalQuantity())
                 .totalPrice(orderDto.getTotalPrice())
                 .status(orderDto.getStatus())
+                .userEmail(orderDto.getEmail())
                 .build();
     }
 
