@@ -3,7 +3,9 @@ server:
 
 spring:
   application:
-    name: order
+    name: "order"
+  profiles:
+    active: "default"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3308/ordersdb
@@ -16,12 +18,15 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  config:
+    import: "optional:configserver:http://localhost:8071/"
 
-#####
-#
-# Payment Processing with Stripe
-#
-#####
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 stripe:
   keys:
     secret: "sk_test_51OcWdTAQX8KpKNai4IvFkWouM4GsZxfo7T8SbcTWPjdjyusZQTvi7hQ1oVnV8IVKYdpovF5zA7C5dl4OdI7spMyB00ECgVOpqV"

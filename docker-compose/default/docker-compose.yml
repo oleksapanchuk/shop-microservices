@@ -1,0 +1,100 @@
+services:
+  userdb:
+    container_name: userdb
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: usersdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+
+  productdb:
+    container_name: productdb
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: productsdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+
+  orderdb:
+    container_name: orderdb
+    ports:
+      - 3308:3306
+    environment:
+      MYSQL_DATABASE: ordersdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+
+  configserver:
+    image: "oleksapanchuk/configserver:v1"
+    container_name: configserver-ms
+    ports:
+      - "8071:8071"
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
+  user:
+    image: "oleksapanchuk/user:v1"
+    container_name: user-ms
+    ports:
+      - "8080:8080"
+    depends_on:
+      userdb:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "user"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://userdb:3306/usersdb"
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+  product:
+    image: "oleksapanchuk/product:v1"
+    container_name: product-ms
+    ports:
+      - "8090:8090"
+    depends_on:
+      productdb:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "product"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://productdb:3306/productsdb"
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+  order:
+    image: "oleksapanchuk/order:v1"
+    container_name: order-ms
+    ports:
+      - "9000:9000"
+    depends_on:
+      orderdb:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "order"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://orderdb:3306/ordersdb"
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+networks:
+  eazybank:
+    driver: "bridge"
