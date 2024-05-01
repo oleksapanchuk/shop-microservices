@@ -14,5 +14,14 @@ spring:
       mode: always
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
+
+#####
+#
+# Payment Processing with Stripe
+#
+#####
+stripe:
+  keys:
+    secret: "sk_test_51OcWdTAQX8KpKNai4IvFkWouM4GsZxfo7T8SbcTWPjdjyusZQTvi7hQ1oVnV8IVKYdpovF5zA7C5dl4OdI7spMyB00ECgVOpqV"
