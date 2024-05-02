@@ -2,10 +2,13 @@ package dev.oleksa.order.controller;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
+import dev.oleksa.order.constants.OrderConstants;
 import dev.oleksa.order.dto.OrderDto;
 import dev.oleksa.order.dto.request.PaymentInfoRequest;
 import dev.oleksa.order.dto.request.PurchaseRequest;
+import dev.oleksa.order.dto.request.UpdateOrderStatusRequest;
 import dev.oleksa.order.dto.response.OrderDetailsResponse;
+import dev.oleksa.order.dto.response.ResponseDto;
 import dev.oleksa.order.service.OrderService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,13 +86,48 @@ public class OrderController {
     }
 
     @PostMapping("/create-payment-intent")
-    public ResponseEntity<String> createPaymentIntent(@RequestBody PaymentInfoRequest paymentInfo) throws StripeException {
+    public ResponseEntity<String> createPaymentIntent(
+            @RequestBody PaymentInfoRequest paymentInfo
+    ) throws StripeException {
 
         log.info("PaymentInfoRequest.amount: {}", paymentInfo.getAmount());
 
         PaymentIntent paymentIntent = orderService.createPaymentIntent(paymentInfo);
 
         return ResponseEntity.ok(paymentIntent.toJson());
+    }
+
+    @GetMapping("/admin/fetch-orders-by-tracking-number/{tracking-number}")
+    public ResponseEntity<Page<OrderDto>> fetchOrderById(
+            @PathVariable(name = "tracking-number") String trackingNumber
+    ) {
+
+        Page<OrderDto> orderDtoPage = orderService.fetchOrdersByTrackingNumber(trackingNumber);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(orderDtoPage);
+    }
+
+    @PatchMapping("/admin/update-order-status")
+    public ResponseEntity<ResponseDto> fetchOrderById(
+            @RequestBody UpdateOrderStatusRequest updateOrderStatusRequest
+    ) {
+
+        boolean isUpdated = orderService.updateOrderStatus(
+                updateOrderStatusRequest.getOrderId(),
+                updateOrderStatusRequest.getOrderStatus()
+        );
+
+        if (isUpdated) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(OrderConstants.STATUS_200, OrderConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.EXPECTATION_FAILED)
+                    .body(new ResponseDto(OrderConstants.STATUS_417, OrderConstants.MESSAGE_417_UPDATE));
+        }
     }
 
 }

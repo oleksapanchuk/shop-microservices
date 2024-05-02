@@ -11,7 +11,13 @@
         <option value="$PROJECT_DIR$/eurekaserver/pom.xml" />
         <option value="$PROJECT_DIR$/gatewayserver/pom.xml" />
         <option value="$PROJECT_DIR$/message/pom.xml" />
+        <option value="$PROJECT_DIR$/adminboard/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/adminboard/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="17" project-jdk-type="JavaSDK">

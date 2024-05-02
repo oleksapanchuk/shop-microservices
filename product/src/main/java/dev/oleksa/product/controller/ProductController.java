@@ -28,7 +28,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("/create")
+    @PostMapping("/admin/create")
     public ResponseEntity<ResponseDto> createProduct(
             @Valid @RequestBody ProductDetailsRequest productDto
     ) {
@@ -51,7 +51,7 @@ public class ProductController {
                 .body(product);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/admin/update")
     public ResponseEntity<ResponseDto> updateProduct(
             @Valid @RequestBody ProductDetailsRequest productDto
     ) {
@@ -71,7 +71,7 @@ public class ProductController {
         }
     }
 
-    @PatchMapping("/deactivate/{product-id}")
+    @PatchMapping("/admin/deactivate/{product-id}")
     public ResponseEntity<ResponseDto> deactivateProduct(
             @PathVariable(name = "product-id") Long productId
     ) {
@@ -118,7 +118,8 @@ public class ProductController {
             @RequestParam List<Long> categoryIds,
             @RequestParam(name = "sorting-order") String sortingOrder,
             @RequestParam(name = "sorting-method") String sortingMethod,
-            Pageable pageable) {
+            Pageable pageable
+    ) {
 
         Page<Product> productsList = productService.getProductsByCategoriesAndPriceRange(minPrice, maxPrice, categoryIds, sortingOrder, sortingMethod, pageable);
 

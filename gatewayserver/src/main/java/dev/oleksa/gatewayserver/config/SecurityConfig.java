@@ -20,10 +20,15 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
         serverHttpSecurity.authorizeExchange(exchanges -> exchanges
-//                        .pathMatchers(HttpMethod.GET).permitAll()
-                        .pathMatchers("/panorama/orders/**").hasRole("CUSTOMER")
-                        .pathMatchers("/panorama/products/**").permitAll()
-                        .pathMatchers("/panorama/users/**").hasRole("CUSTOMER"))
+                        .pathMatchers(
+                                "/panorama/orders/admin/**",
+                                "/panorama/products/admin/**",
+                                "/panorama/users/admin/**").hasRole("ADMIN")
+                        .pathMatchers(
+                                "/panorama/orders/**",
+                                "/panorama/products/**",
+                                "/panorama/users/**").hasRole("CUSTOMER")
+                        .pathMatchers("/panorama/products/**").permitAll())
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec
                         .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
         serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable);

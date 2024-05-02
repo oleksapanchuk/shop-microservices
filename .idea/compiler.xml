@@ -16,9 +16,13 @@
         <module name="order" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="adminboard" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="adminboard" options="-parameters" />
       <module name="configserver" options="-parameters" />
       <module name="eurekaserver" options="-parameters" />
       <module name="gatewayserver" options="-parameters" />

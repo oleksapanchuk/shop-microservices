@@ -19,8 +19,11 @@ public interface OrderService {
 
     Page<OrderDto> fetchOrdersByEmail(String email, Pageable pageable);
 
+    Page<OrderDto> fetchOrdersByTrackingNumber(String trackingNumber);
+
     OrderDetailsResponse fetchOrderDetails(Long orderId);
 
     PaymentIntent createPaymentIntent(PaymentInfoRequest paymentInfo) throws StripeException;
 
+    boolean updateOrderStatus(Long orderId, String orderStatus);
 }

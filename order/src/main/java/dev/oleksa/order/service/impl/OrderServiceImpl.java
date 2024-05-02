@@ -25,9 +25,7 @@ import dev.oleksa.order.service.client.UserFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -121,6 +119,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Page<OrderDto> fetchOrdersByTrackingNumber(String trackingNumber) {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+
+        return orderRepository.findByTrackingNumber(trackingNumber, pageable)
+                .map(OrderMapper::mapToOrderDto);
+    }
+
+    @Override
     public OrderDetailsResponse fetchOrderDetails(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new ResourceNotFoundException("Order", "id", orderId)
@@ -149,6 +155,16 @@ public class OrderServiceImpl implements OrderService {
         params.put("receipt_email", paymentInfo.getReceiptEmail());
 
         return PaymentIntent.create(params);
+    }
+
+    @Override
+    public boolean updateOrderStatus(Long orderId, String orderStatus) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new ResourceNotFoundException("Order", "orderId", orderId)
+        );
+        order.setStatus(orderStatus);
+        orderRepository.save(order);
+        return true;
     }
 
     private String generateOrderTrackingNumber() {
