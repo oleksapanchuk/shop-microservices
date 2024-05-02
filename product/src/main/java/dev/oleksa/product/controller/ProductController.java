@@ -23,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @Validated
 @RestController
-@RequestMapping(path = "/api/v1/products", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "/api/v1", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class ProductController {
 
     private final ProductService productService;
