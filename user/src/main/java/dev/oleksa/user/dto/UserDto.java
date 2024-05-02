@@ -15,10 +15,6 @@ public class UserDto {
     @Schema(description = "The unique ID of the user")
     private Long id;
 
-    @NotBlank(message = "Username is mandatory")
-    @Schema(description = "The unique username of the user")
-    private String username;
-
     @NotBlank(message = "Email is mandatory")
     @Email(message = "Email should be valid")
     @Schema(description = "The unique email of the user")

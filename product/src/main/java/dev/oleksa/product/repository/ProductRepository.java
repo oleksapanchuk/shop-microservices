@@ -21,7 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = """
                 SELECT *
                 FROM products p
-                WHERE p.product_price BETWEEN :minPrice AND :maxPrice
+                WHERE p.price BETWEEN :minPrice AND :maxPrice
             """, nativeQuery = true)
     Page<Product> findProductsByPriceRange(
             @Param("minPrice") double minPrice,
@@ -31,10 +31,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = """
                 SELECT p.*
                 FROM (
-                  SELECT p.product_id
+                  SELECT p.id
                   FROM products p
                   JOIN product_has_category phc ON p.product_id = phc.product_id
-                  WHERE p.product_price BETWEEN :minPrice AND :maxPrice
+                  WHERE p.price BETWEEN :minPrice AND :maxPrice
                   AND phc.category_id IN (:categoryIds)
                   GROUP BY p.product_id
                   HAVING COUNT(DISTINCT phc.category_id) = :numCategories
@@ -48,7 +48,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                           SELECT 1
                           FROM products p
                           JOIN product_has_category phc ON p.product_id = phc.product_id
-                          WHERE p.product_price BETWEEN :minPrice AND :maxPrice
+                          WHERE p.price BETWEEN :minPrice AND :maxPrice
                           AND phc.category_id IN (:categoryIds)
                           GROUP BY p.product_id
                           HAVING COUNT(DISTINCT phc.category_id) = :numCategories

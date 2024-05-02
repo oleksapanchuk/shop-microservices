@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient("product")
+@FeignClient(name="product", fallback = ProductFallback.class)
 public interface  ProductFeignClient {
 
     @GetMapping(value = "/api/v1/fetch/{product-id}", consumes = "application/json")

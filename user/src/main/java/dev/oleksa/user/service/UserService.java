@@ -12,7 +12,7 @@ public interface UserService {
 
     UserDto fetchUserByEmail(String email);
 
-    boolean updateUser(String email, UserDto userDto);
+    boolean updateUser(UserDto userDto);
 
     boolean updatePassword(String email, String oldPassword, String newPassword);
 

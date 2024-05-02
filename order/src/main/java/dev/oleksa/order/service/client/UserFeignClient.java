@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient("user")
+@FeignClient(name="user", fallback = UserFallback.class)
 public interface UserFeignClient {
 
     @GetMapping("/api/v1/fetch/{user-id}")
