@@ -2,10 +2,8 @@ package dev.oleksa.user.controller;
 
 import dev.oleksa.user.constants.UserConstants;
 import dev.oleksa.user.dto.UserDto;
-import dev.oleksa.user.dto.request.PasswordUpdateRequest;
 import dev.oleksa.user.dto.request.SignUpRequest;
 import dev.oleksa.user.dto.response.ResponseDto;
-import dev.oleksa.user.service.EmailService;
 import dev.oleksa.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -26,7 +24,6 @@ import java.util.Collections;
 public class UserController {
 
     private final UserService userService;
-    private final EmailService emailService;
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createUser(
@@ -73,23 +70,6 @@ public class UserController {
                 new ResponseEntity<>(Collections.singletonMap("message", "Failed to update user data"), HttpStatus.BAD_REQUEST);
     }
 
-
-    @GetMapping("/send-email-confirmation")
-    public ResponseEntity<ResponseDto> sendEmailConfirmation(
-            @RequestParam String email
-    ) {
-        boolean isSent = emailService.sendConfirmationEmail(email); // TODO: add token to the request
-
-        if (isSent) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new ResponseDto(UserConstants.STATUS_200, UserConstants.MESSAGE_200));
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.EXPECTATION_FAILED)
-                    .body(new ResponseDto(UserConstants.STATUS_417, UserConstants.MESSAGE_417_DELETE));
-        }
-    }
 
     @PatchMapping("/confirm-account")
     public ResponseEntity<ResponseDto> confirmAccount(@RequestParam String token) {

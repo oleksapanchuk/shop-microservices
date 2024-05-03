@@ -11,4 +11,9 @@ public class UserFallback implements UserFeignClient {
     public ResponseEntity<UserDto> fetchUser(Long userId) {
         return null;
     }
+
+    @Override
+    public ResponseEntity<UserDto> getByEmail(String email) {
+        return null;
+    }
 }

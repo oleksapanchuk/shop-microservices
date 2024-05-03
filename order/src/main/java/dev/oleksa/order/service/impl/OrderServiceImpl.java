@@ -5,13 +5,12 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import dev.oleksa.order.constants.OrderStatus;
 import dev.oleksa.order.dto.OrderDto;
+import dev.oleksa.order.dto.OrderMsgDto;
 import dev.oleksa.order.dto.ProductDto;
-import dev.oleksa.order.dto.UserDto;
 import dev.oleksa.order.dto.request.PaymentInfoRequest;
 import dev.oleksa.order.dto.request.PurchaseRequest;
 import dev.oleksa.order.dto.response.OrderDetailsResponse;
 import dev.oleksa.order.dto.response.OrderItemResponse;
-import dev.oleksa.order.dto.response.ProductDetailsResponse;
 import dev.oleksa.order.entity.Address;
 import dev.oleksa.order.entity.Order;
 import dev.oleksa.order.entity.OrderItem;
@@ -25,6 +24,7 @@ import dev.oleksa.order.service.client.UserFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -40,17 +40,19 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductFeignClient productFeignClient;
     private final UserFeignClient userFeignClient;
+    private final StreamBridge streamBridge;
 
     @Autowired
     public OrderServiceImpl(
             OrderRepository orderRepository,
             @Value("${stripe.keys.secret}") String secretKey,
             ProductFeignClient productFeignClient,
-            UserFeignClient userFeignClient
+            UserFeignClient userFeignClient, StreamBridge streamBridge
     ) {
         this.orderRepository = orderRepository;
         this.productFeignClient = productFeignClient;
         this.userFeignClient = userFeignClient;
+        this.streamBridge = streamBridge;
 
         // initialize Stripe API with secret key
         Stripe.apiKey = secretKey;
@@ -68,33 +70,31 @@ public class OrderServiceImpl implements OrderService {
         Set<OrderItem> orderItems = purchase.getOrderItems();
         orderItems.forEach(order::addItem);
 
-
-        // TODO
-//        User user = userRepository.findByUsername(username).orElseThrow(
-//                () -> new ResourceNotFoundException("User", "username", username)
-//        );
-//        order.setUser(user);
+        order.setUserEmail(purchase.getOrder().getEmail());
 
         Address shippingAddress = AddressMapper.mapToAddress(purchase.getShippingAddress());
         order.setShippingAddress(shippingAddress);
         order.setStatus(OrderStatus.ACCEPTED.name());
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
 
-        return mapToOrderDto(order);
+        sendCommunication(savedOrder);
+
+        return mapToOrderDto(savedOrder);
+    }
+
+    private void sendCommunication(Order order) {
+        var ordersMsgDto = new OrderMsgDto(order.getUserEmail(), order.getOrderTrackingNumber());
+        log.info("Sending Communication request for the details: {}", ordersMsgDto);
+        var result = streamBridge.send("sendCommunication-out-0", ordersMsgDto);
+        log.info("Is the Communication request successfully triggered ? : {}", result);
     }
 
     @Override
     public OrderDto fetchOrderById(Long orderId) {
-//        Order order = orderRepository.findById(orderId).orElseThrow(
-//                () -> new ResourceNotFoundException("Order", "id", orderId)
-//        );
-        ProductDetailsResponse productDetailsResponse = productFeignClient.fetchProduct(1L).getBody();
-        UserDto userDto = userFeignClient.fetchUser(1L).getBody();
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new ResourceNotFoundException("Order", "id", orderId)
+        );
 
-        Order order = Order.builder()
-                .orderTrackingNumber(productDetailsResponse.getName())
-                .userEmail(userDto.getEmail())
-                .build();
         return mapToOrderDto(order);
     }
 

@@ -5,14 +5,33 @@ spring:
   application:
     name: "message"
   cloud:
+    function:
+      definition: orderDetails;emailConfirmation
     stream:
       bindings:
         emailConfirmation-in-0:
-          destination: send-communication
+          destination: send-confirmation
           group: ${spring.application.name}
         orderDetails-in-0:
           destination: send-communication
           group: ${spring.application.name}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: olexandrpan4uk@gmail.com
+    password: "cjvm kbxb qbdr hgak"
+    default-encoding: UTF-8
+    properties:
+      mail:
+        mime: charset=UTF-8
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        connectiontimeout: 1000
+        timeout: 1000
+        writetimeout: 1000
 
   rabbitmq:
     host: localhost

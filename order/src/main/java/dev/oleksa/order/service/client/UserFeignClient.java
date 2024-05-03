@@ -11,4 +11,7 @@ public interface UserFeignClient {
 
     @GetMapping("/api/v1/fetch/{user-id}")
     ResponseEntity<UserDto> fetchUser(@PathVariable(name = "user-id") Long userId);
+
+    @GetMapping("/api/v1/by-email/{email}")
+    ResponseEntity<UserDto> getByEmail(@PathVariable String email);
 }

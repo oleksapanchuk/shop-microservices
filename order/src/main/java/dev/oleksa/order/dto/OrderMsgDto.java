@@ -1,4 +1,4 @@
-package dev.oleksa.message.dto;
+package dev.oleksa.order.dto;
 
 public record OrderMsgDto(
         String email,

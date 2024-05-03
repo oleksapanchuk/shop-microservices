@@ -1,4 +1,4 @@
 package dev.oleksa.message.dto;
 
-public class UserMsgDto {
+public record UserMsgDto(String email, String token) {
 }
