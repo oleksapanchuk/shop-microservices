@@ -73,17 +73,6 @@ public class UserController {
                 new ResponseEntity<>(Collections.singletonMap("message", "Failed to update user data"), HttpStatus.BAD_REQUEST);
     }
 
-    @PatchMapping("/update-password")
-    public ResponseEntity<?> updatePassword(
-            @RequestBody PasswordUpdateRequest passwordRequest
-    ) {
-        boolean isUpdated = userService.updatePassword(passwordRequest.getEmail(), passwordRequest.getOldPassword(), passwordRequest.getNewPassword());
-        if (isUpdated) {
-            return new ResponseEntity<>(Collections.singletonMap("message", "Password updated successfully"), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(Collections.singletonMap("message", "Failed to update password"), HttpStatus.BAD_REQUEST);
-        }
-    }
 
     @GetMapping("/send-email-confirmation")
     public ResponseEntity<ResponseDto> sendEmailConfirmation(

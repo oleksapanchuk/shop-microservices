@@ -2,6 +2,7 @@ package dev.oleksa.user.service.impl;
 
 import dev.oleksa.user.dto.UserDto;
 import dev.oleksa.user.dto.request.SignUpRequest;
+import dev.oleksa.user.entity.Role;
 import dev.oleksa.user.entity.User;
 import dev.oleksa.user.exception.ResourceNotFoundException;
 import dev.oleksa.user.exception.UserNotFoundException;
@@ -18,13 +19,12 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
-//    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Long createUser(SignUpRequest request) {
         User user = User.builder()
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .role(Role.ROLE_CUSTOMER)
                 .build();
         User savedUser = repository.save(user);
         return savedUser.getId();
@@ -61,20 +61,6 @@ public class UserServiceImpl implements UserService {
         repository.save(user);
 
         return true;
-    }
-
-    @Override
-    public boolean updatePassword(String email, String oldPassword, String newPassword) {
-        User user = repository.findByEmail(email).orElseThrow(
-                () -> new UserNotFoundException(email)
-        );
-/*
-        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
-            user.setPassword(passwordEncoder.encode(newPassword));
-            repository.save(user);
-            return true;
-        }*/
-        return false;
     }
 
     @Override

@@ -2,7 +2,6 @@ package dev.oleksa.user.service;
 
 import dev.oleksa.user.dto.UserDto;
 import dev.oleksa.user.dto.request.SignUpRequest;
-import dev.oleksa.user.entity.User;
 
 public interface UserService {
 
@@ -13,8 +12,6 @@ public interface UserService {
     UserDto fetchUserByEmail(String email);
 
     boolean updateUser(UserDto userDto);
-
-    boolean updatePassword(String email, String oldPassword, String newPassword);
 
     boolean confirmUserAccount(String email);
 

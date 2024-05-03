@@ -13,6 +13,8 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -70,4 +72,5 @@ public class GatewayserverApplication {
         return exchange -> Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst("user"))
                 .defaultIfEmpty("anonymous");
     }
+
 }

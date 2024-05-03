@@ -16,8 +16,4 @@ public class SignUpRequest {
     @Email(message = "Email address must be in the format user@example.com")
     private String email;
 
-    @Schema(description = "Password", example = "my_1secret1_password")
-    @Size(max = 255, message = "Password length must be no more than 255 characters")
-    private String password;
-
 }
